@@ -2,6 +2,7 @@ class AllowAny:
     """
     Default authentication class.
     Allows any user for any action.
+    Subclass it and override methods below.
     """
     def has_node_permission(self, id, context, info):
         return True
@@ -15,7 +16,6 @@ class AllowAny:
 
 class AllowAuthenticated:
     """
-    Base authentication class.
     Allows performing action only for logged in users.
     """
 
@@ -35,17 +35,16 @@ class AllowAuthenticated:
         return False
 
 
-class AllowStaff(AllowAuthenticated):
+class AllowStaff:
     """
-    Base authentication class.
-    Allow performing action only for admin and staff users.
+    Allow performing action only for staff users.
     """
 
     def has_node_permisison(self, id, context, info):
-        return super().has_node_permisison(id, context, info) and context.user.is_staff()
+        return context.user.is_staff()
 
     def has_mutation_permission(self, input, context, info):
-        return super().has_mutation_permission(input, context, info) and context.user.is_staff()
+        return context.user.is_staff()
 
     def has_filter_permission(self, context):
-        return super().has_filter_permission(context) and context.user.is_staff()
+        return context.user.is_staff()
