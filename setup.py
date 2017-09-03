@@ -9,5 +9,8 @@ setup(
     url='https://github.com/redzej/graphene-permissions',
     download_url='https://github.com/redzej/graphene-permissions/archive/0.1.tar.gz',
     keywords=['graphene', 'django', 'permissions'],
-    classifiers=[],
+    classifiers=[
+        'Framework :: Django',
+        'Programming Language :: Python :: 3',
+    ],
 )
