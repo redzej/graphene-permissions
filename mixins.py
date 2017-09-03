@@ -1,4 +1,4 @@
-from .permission_classes import AllowAny
+from .permissions import AllowAny
 from django.core.exceptions import PermissionDenied
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django import DjangoConnectionField
@@ -37,7 +37,7 @@ class AuthMutation:
             raise PermissionDenied(PERMISSION_DENIED_MSG)
 
 
-class AuthFilterConnectionField(DjangoFilterConnectionField):
+class AuthFilter(DjangoFilterConnectionField):
     """
     Custom ConnectionField for basic authentication system.
     """
