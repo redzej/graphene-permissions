@@ -1,6 +1,6 @@
-# graphene-auth
+# graphene-permissions
 
-Base permission system for graphene-django apps.
+Simple permission system for graphene-django apps.
 
 ## Requirements
 
