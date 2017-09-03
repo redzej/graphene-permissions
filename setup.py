@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='graphene-permissions',
-    packages=['graphene-permissions'],
+    packages=['graphene_permissions'],
     license='MIT',
     version='0.1.1',
     description='Simple graphene-django permission system',
