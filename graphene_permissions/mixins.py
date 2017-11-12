@@ -61,5 +61,3 @@ class AuthFilter(DjangoFilterConnectionField):
             resolver, connection, default_manager, max_limit, enforce_first_or_last,
             filterset_class, filtering_args, root, args, context, info,
         )
-
-
