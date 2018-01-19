@@ -7,8 +7,13 @@ from graphene_django import DjangoConnectionField
 PERMISSION_DENIED_MSG = 'Permission Denied'
 
 
+def access_denied_resolver():
+    return None
+
+
 class AuthNode:
     permission_classes = (AllowAny, )
+    deny_resolver = access_denied_resolver
 
     @classmethod
     def get_node(cls, id, context, info):
@@ -25,16 +30,17 @@ class AuthNode:
             return object_instance
 
         else:
-            raise PermissionDenied(PERMISSION_DENIED_MSG)
+            cls.deny_resolver()
 
 
 class AuthMutation:
     permission_classes = (AllowAny, )
+    deny_resolver = access_denied_resolver
 
     @classmethod
     def has_permission(cls, input, context, info):
         if not all([perm() for perm in cls.permission_classes]):
-            raise PermissionDenied(PERMISSION_DENIED_MSG)
+            cls.deny_resolver()
 
 
 class AuthFilter(DjangoFilterConnectionField):
@@ -42,6 +48,7 @@ class AuthFilter(DjangoFilterConnectionField):
     Custom ConnectionField for basic authentication system.
     """
     permission_classes = (AllowAny, )
+    deny_resolver = access_denied_resolver
 
     @classmethod
     def has_permission(cls, context):
@@ -53,7 +60,7 @@ class AuthFilter(DjangoFilterConnectionField):
 
         if not cls.has_permission(context):
             return DjangoConnectionField.connection_resolver(
-                resolver, connection, (PermissionDenied(PERMISSION_DENIED_MSG), ),
+                resolver, connection, (cls.deny_resolver(), ),
                 max_limit, enforce_first_or_last, root, args, context, info,
             )
 
