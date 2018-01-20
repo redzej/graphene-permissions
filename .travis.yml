@@ -13,7 +13,8 @@ env:
 
 install:
     - pip install Django==$DJANGO_VERSION
-    - pip install -r requirements.txt
+    - pip install -r requirements/requirements.txt
+    - pip install -r requirements/requirements-test.txt
 
 script:
     - flake8

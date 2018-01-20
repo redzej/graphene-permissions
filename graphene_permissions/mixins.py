@@ -1,8 +1,8 @@
-from .permissions import AllowAny
 from django.core.exceptions import PermissionDenied
-from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django import DjangoConnectionField
+from graphene_django.filter import DjangoFilterConnectionField
 
+from .permissions import AllowAny
 
 PERMISSION_DENIED_MSG = 'Permission Denied'
 
@@ -56,12 +56,12 @@ class AuthFilter(DjangoFilterConnectionField):
 
     def connection_resolver(cls, resolver, connection, default_manager, max_limit,
                             enforce_first_or_last, filterset_class, filtering_args,
-                            root, args, context, info):
+                            root, info, **args):
 
-        if not cls.has_permission(context):
+        if not cls.has_permission(info.context):
             return DjangoConnectionField.connection_resolver(
-                resolver, connection, (cls.deny_resolver(), ),
-                max_limit, enforce_first_or_last, root, args, context, info,
+                resolver, connection, qs, max_limit, enforce_first_or_last,
+                root, info, **args
             )
 
         return super().connection_resolver(
