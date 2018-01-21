@@ -10,7 +10,7 @@ class AllowAny:
         return True
 
     @staticmethod
-    def has_mutation_permission(input, info):
+    def has_mutation_permission(root, info, input):
         return True
 
     @staticmethod
@@ -30,7 +30,7 @@ class AllowAuthenticated:
         return False
 
     @staticmethod
-    def has_mutation_permission(input, info):
+    def has_mutation_permission(root, info, input):
         if hasattr(info, 'user'):
             return info.context.user.is_authenticated
         return False
@@ -38,7 +38,7 @@ class AllowAuthenticated:
     @staticmethod
     def has_filter_permission(info):
         if hasattr(info.context, 'user'):
-            return info.context.user and info.context.user.is_authenticated()
+            return info.context.user.is_authenticated()
         return False
 
 
@@ -52,7 +52,7 @@ class AllowStaff:
         return info.context.user.is_staff()
 
     @staticmethod
-    def has_mutation_permission(input, info):
+    def has_mutation_permission(root, info, input):
         return info.context.user.is_staff()
 
     @staticmethod
