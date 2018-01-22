@@ -1,5 +1,7 @@
 # graphene-permissions
 
+[![Build Status](https://travis-ci.org/redzej/graphene-permissions.svg?branch=travis-config)](https://travis-ci.org/redzej/graphene-permissions)
+
 Simple permission system for graphene-django apps.
 
 ## Requirements
