@@ -31,14 +31,14 @@ class AllowAuthenticated:
 
     @staticmethod
     def has_mutation_permission(root, info, input):
-        if hasattr(info, 'user'):
+        if hasattr(info.context, 'user'):
             return info.context.user.is_authenticated
         return False
 
     @staticmethod
     def has_filter_permission(info):
         if hasattr(info.context, 'user'):
-            return info.context.user.is_authenticated()
+            return info.context.user.is_authenticated
         return False
 
 
@@ -49,12 +49,12 @@ class AllowStaff:
 
     @staticmethod
     def has_node_permisison(info, id):
-        return info.context.user.is_staff()
+        return info.context.user.is_staff
 
     @staticmethod
     def has_mutation_permission(root, info, input):
-        return info.context.user.is_staff()
+        return info.context.user.is_staff
 
     @staticmethod
     def has_filter_permission(info):
-        return info.context.user.is_staff()
+        return info.context.user.is_staff

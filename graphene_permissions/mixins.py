@@ -3,13 +3,8 @@ from graphene_django.filter import DjangoFilterConnectionField
 from graphene_permissions.permissions import AllowAny
 
 
-def deny_permission():
-    return None
-
-
 class AuthNode:
     permission_classes = (AllowAny,)
-    permission_denied = deny_permission
 
     @classmethod
     def get_node(cls, info, id):
@@ -20,20 +15,17 @@ class AuthNode:
                 object_instance = None
             return object_instance
         else:
-            cls.permission_denied()
+            return None
 
 
 class AuthMutation:
     permission_classes = (AllowAny,)
-    permission_denied = deny_permission
 
     @classmethod
     def has_permission(cls, root, info, input):
-        permissions = all(
+        return all(
             [perm().has_mutation_permission(root, info, input) for perm in cls.permission_classes]
         )
-        if not permissions:
-            cls.permission_denied()
 
 
 class AuthFilter(DjangoFilterConnectionField):
@@ -41,7 +33,6 @@ class AuthFilter(DjangoFilterConnectionField):
     Custom ConnectionField for basic authentication system.
     """
     permission_classes = (AllowAny,)
-    permission_denied = deny_permission
 
     @classmethod
     def has_permission(cls, info):
@@ -55,13 +46,20 @@ class AuthFilter(DjangoFilterConnectionField):
             enforce_first_or_last, filterset_class, filtering_args,
             root, info, **args
     ):
+
+        filter_kwargs = {k: v for k, v in args.items() if k in filtering_args}
+        qs = filterset_class(
+            data=filter_kwargs,
+            queryset=default_manager.get_queryset()
+        ).qs
+
         if not cls.has_permission(info):
-            return super().connection_resolver(
-                resolver, connection, cls.permission_denied(),
+            return super(DjangoFilterConnectionField, cls).connection_resolver(
+                resolver, connection, qs.none(),
                 max_limit, enforce_first_or_last, root, info, **args
             )
 
-        return super().connection_resolver(
-            resolver, connection, default_manager, max_limit, enforce_first_or_last,
-            filterset_class, filtering_args, root, info, **args,
+        return super(DjangoFilterConnectionField, cls).connection_resolver(
+            resolver, connection, qs, max_limit, enforce_first_or_last,
+            filterset_class, filtering_args, **args,
         )
