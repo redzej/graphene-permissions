@@ -1,5 +1,5 @@
 import graphene
-from graphene import Schema, relay
+from graphene import ObjectType, Schema, relay
 from graphene_django import DjangoObjectType
 
 from graphene_permissions.mixins import AuthFilter, AuthNode
@@ -12,6 +12,7 @@ class OwnerNode(AuthNode, DjangoObjectType):
 
     class Meta:
         model = Owner
+        filter_fields = ('first_name',)
         interfaces = (relay.Node,)
 
 
@@ -20,6 +21,7 @@ class PetNode(AuthNode, DjangoObjectType):
 
     class Meta:
         model = Pet
+        filter_fields = ('name',)
         interfaces = (relay.Node,)
 
 
@@ -31,4 +33,8 @@ class PetsQuery:
     all_owners = AuthFilter(OwnerNode)
 
 
-schema = Schema(query=PetsQuery)
+class Query(PetsQuery, ObjectType):
+    pass
+
+
+schema = Schema(query=Query)

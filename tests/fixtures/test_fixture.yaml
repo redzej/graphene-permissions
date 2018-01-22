@@ -1,0 +1,32 @@
+- model: test_app.owner
+  pk: 1
+  fields:
+    first_name: Kate
+    last_name: Katy
+
+- model: test_app.owner
+  pk: 2
+  fields:
+    first_name: Paul
+    last_name: Paulin
+
+- model: test_app.pet
+  pk: 1
+  fields:
+    name: Snakey
+    race: snake
+    owner: 1
+
+- model: test_app.pet
+  pk: 2
+  fields:
+    name: Pawn
+    race: cat
+    owner: 2
+
+- model: test_app.pet
+  pk: 3
+  fields:
+    name: Rex
+    race: dog
+    owner: 2

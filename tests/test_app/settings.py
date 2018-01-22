@@ -35,6 +35,9 @@ DATABASES = {
 }
 
 
+ROOT_URLCONF = 'tests.test_app.urls'
+
+
 GRAPHENE = {
-    'SCHEMA': 'schema.schema'
+    'SCHEMA': 'tests.test_app.schema.schema'
 }
