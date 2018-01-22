@@ -1,5 +1,6 @@
-from tests.test_app.models import Owner
 import pytest
+
+from tests.test_app.models import Owner
 
 
 @pytest.mark.django_db

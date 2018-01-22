@@ -1,8 +1,9 @@
 import graphene
 from graphene import Schema, relay
 from graphene_django import DjangoObjectType
-from graphene_permissions.permissions import AllowStaff, AllowAny
-from graphene_permissions.mixins import AuthFilter, AuthNode, AuthMutation
+
+from graphene_permissions.mixins import AuthFilter, AuthNode
+from graphene_permissions.permissions import AllowStaff
 from tests.test_app.models import Owner, Pet
 
 

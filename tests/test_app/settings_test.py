@@ -1,9 +1,7 @@
-SECRET_KEY = '3u!$=bdo5=55^eudco30#xmvdb&@s%$739%cfas4&t#favoy!5'
+SECRET_KEY = 'xxx'
 
 DEBUG = True
 
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -29,8 +27,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-#ROOT_URLCONF = 'cookbook.urls'
-
 
 DATABASES = {
     'default': {
@@ -42,4 +38,3 @@ DATABASES = {
 GRAPHENE = {
     'SCHEMA': 'schema.schema'
 }
-
