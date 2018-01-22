@@ -1,70 +1,65 @@
-from django.core.exceptions import PermissionDenied
-from graphene_django import DjangoConnectionField
 from graphene_django.filter import DjangoFilterConnectionField
 
-from .permissions import AllowAny
-
-PERMISSION_DENIED_MSG = 'Permission Denied'
-
-
-def access_denied_resolver():
-    return None
+from graphene_permissions.permissions import AllowAny
 
 
 class AuthNode:
-    permission_classes = (AllowAny, )
-    deny_resolver = access_denied_resolver
+    permission_classes = (AllowAny,)
 
     @classmethod
-    def get_node(cls, id, context, info):
-
-        def has_permission():
-            return all([perm() for perm in cls.permission_classes])
-
-        if has_permission():
+    def get_node(cls, info, id):
+        if all([perm().has_node_permission(info, id) for perm in cls.permission_classes]):
             try:
                 object_instance = cls._meta.model.objects.get(id=id)
             except cls._meta.model.DoesNotExist:
                 object_instance = None
-
             return object_instance
-
         else:
-            cls.deny_resolver()
+            return None
 
 
 class AuthMutation:
-    permission_classes = (AllowAny, )
-    deny_resolver = access_denied_resolver
+    permission_classes = (AllowAny,)
 
     @classmethod
-    def has_permission(cls, input, context, info):
-        if not all([perm() for perm in cls.permission_classes]):
-            cls.deny_resolver()
+    def has_permission(cls, root, info, input):
+        return all(
+            [perm().has_mutation_permission(root, info, input) for perm in cls.permission_classes]
+        )
 
 
 class AuthFilter(DjangoFilterConnectionField):
     """
     Custom ConnectionField for basic authentication system.
     """
-    permission_classes = (AllowAny, )
-    deny_resolver = access_denied_resolver
+    permission_classes = (AllowAny,)
 
     @classmethod
-    def has_permission(cls, context):
-        return all([permission() for permission in cls.permission_classes])
+    def has_permission(cls, info):
+        return all(
+            [permission().has_filter_permission(info) for permission in cls.permission_classes]
+        )
 
-    def connection_resolver(cls, resolver, connection, default_manager, max_limit,
-                            enforce_first_or_last, filterset_class, filtering_args,
-                            root, info, **args):
+    @classmethod
+    def connection_resolver(
+            cls, resolver, connection, default_manager, max_limit,
+            enforce_first_or_last, filterset_class, filtering_args,
+            root, info, **args
+    ):
 
-        if not cls.has_permission(info.context):
-            return DjangoConnectionField.connection_resolver(
-                resolver, connection, qs, max_limit, enforce_first_or_last,
-                root, info, **args
+        filter_kwargs = {k: v for k, v in args.items() if k in filtering_args}
+        qs = filterset_class(
+            data=filter_kwargs,
+            queryset=default_manager.get_queryset()
+        ).qs
+
+        if not cls.has_permission(info):
+            return super(DjangoFilterConnectionField, cls).connection_resolver(
+                resolver, connection, qs.none(),
+                max_limit, enforce_first_or_last, root, info, **args
             )
 
-        return super().connection_resolver(
-            resolver, connection, default_manager, max_limit, enforce_first_or_last,
-            filterset_class, filtering_args, root, args, context, info,
+        return super(DjangoFilterConnectionField, cls).connection_resolver(
+            resolver, connection, qs, max_limit, enforce_first_or_last,
+            filterset_class, filtering_args, **args,
         )
