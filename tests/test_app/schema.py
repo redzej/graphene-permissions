@@ -3,11 +3,11 @@ from graphene import ObjectType, Schema, relay
 from graphene_django import DjangoObjectType
 
 from graphene_permissions.mixins import AuthFilter, AuthNode
-from graphene_permissions.permissions import AllowStaff
+from graphene_permissions.permissions import AllowStaff, AllowAny
 from tests.test_app.models import Owner, Pet
 
 
-class OwnerNode(AuthNode, DjangoObjectType):
+class RestrictedOwnerNode(AuthNode, DjangoObjectType):
     permission_classes = (AllowStaff,)
 
     class Meta:
@@ -16,7 +16,7 @@ class OwnerNode(AuthNode, DjangoObjectType):
         interfaces = (relay.Node,)
 
 
-class PetNode(AuthNode, DjangoObjectType):
+class RestrictedPetNode(AuthNode, DjangoObjectType):
     permission_classes = (AllowStaff,)
 
     class Meta:
@@ -25,12 +25,31 @@ class PetNode(AuthNode, DjangoObjectType):
         interfaces = (relay.Node,)
 
 
-class PetsQuery:
-    pet = graphene.Field(PetNode)
-    owner = graphene.Field(OwnerNode)
+class NormalPetNode(AuthNode, DjangoObjectType):
+    permission_classes = (AllowAny,)
 
-    all_pets = AuthFilter(PetNode)
-    all_owners = AuthFilter(OwnerNode)
+    class Meta:
+        model = Pet
+        filter_fields = ('name',)
+        interfaces = (relay.Node,)
+
+
+class NormalOwnerNode(AuthNode, DjangoObjectType):
+    permission_classes = (AllowAny,)
+
+    class Meta:
+        model = Pet
+        filter_fields = ('name',)
+        interfaces = (relay.Node,)
+
+
+class PetsQuery:
+    pet = graphene.Field(RestrictedPetNode)
+    owner = graphene.Field(RestrictedOwnerNode)
+
+    all_pets = AuthFilter(RestrictedPetNode)
+    all_n_pets = AuthFilter(PetNode)
+    all_owners = AuthFilter(RestrictedOwnerNode)
 
 
 class Query(PetsQuery, ObjectType):

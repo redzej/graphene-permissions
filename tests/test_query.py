@@ -20,4 +20,28 @@ def test_n(test_client):
     }
     """
 
-    test_client.post('/graphql', data=query, content_type='application/graphql')
+    dic = {
+        'path': '/graphql',
+        'content_type': 'application/graphql',
+    }
+
+    test_client.post(data=query, **dic)
+
+    query = """
+    query{
+        allNPets{
+            edges{
+                node{
+                    id, 
+                    name,
+                    owner{
+                        id,
+                        firstName,
+                    }
+                }
+            }
+        }
+    }
+    """
+
+    test_client.post(data=query, **dic)
