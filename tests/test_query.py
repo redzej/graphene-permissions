@@ -32,7 +32,7 @@ def test_n(test_client):
         allNPets{
             edges{
                 node{
-                    id, 
+                    id,
                     name,
                     owner{
                         id,
