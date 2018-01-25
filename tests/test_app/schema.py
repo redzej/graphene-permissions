@@ -4,14 +4,14 @@ from graphene_django import DjangoObjectType
 
 from graphene_permissions.mixins import AuthFilter, AuthNode
 from graphene_permissions.permissions import AllowAny, AllowStaff
-from tests.test_app.models import Owner, Pet
+from tests.test_app.models import User, Pet
 
 
-class RestrictedOwnerNode(AuthNode, DjangoObjectType):
+class RestrictedUserNode(AuthNode, DjangoObjectType):
     permission_classes = (AllowStaff,)
 
     class Meta:
-        model = Owner
+        model = User
         filter_fields = ('first_name',)
         interfaces = (relay.Node,)
 
@@ -31,11 +31,11 @@ class NormalPetNode(AuthNode, DjangoObjectType):
     class Meta:
         model = Pet
         filter_fields = ('name',)
-        exclude_fields = ('id', 'owner')
+        exclude_fields = ('id', 'User')
         interfaces = (relay.Node,)
 
 
-class NormalOwnerNode(AuthNode, DjangoObjectType):
+class NormalUserNode(AuthNode, DjangoObjectType):
     permission_classes = (AllowAny,)
 
     class Meta:
@@ -51,14 +51,14 @@ class StaffRequiredFilter(AuthFilter):
 
 class PetsQuery:
     restricted_pet = graphene.Field(RestrictedPetNode)
-    restricted_owner = graphene.Field(RestrictedOwnerNode)
+    restricted_user = graphene.Field(RestrictedUserNode)
     all_restricted_pets = StaffRequiredFilter(RestrictedPetNode)
-    all_restricted_owners = StaffRequiredFilter(RestrictedOwnerNode)
+    all_restricted_users = StaffRequiredFilter(RestrictedUserNode)
 
     pet = graphene.Field(NormalPetNode)
-    owner = graphene.Field(NormalOwnerNode)
+    user = graphene.Field(NormalUserNode)
     all_pets = AuthFilter(NormalPetNode)
-    all_owners = AuthFilter(NormalOwnerNode)
+    all_users = AuthFilter(NormalUserNode)
 
 
 class Query(PetsQuery, ObjectType):

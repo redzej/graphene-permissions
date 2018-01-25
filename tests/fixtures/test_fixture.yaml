@@ -1,12 +1,23 @@
-- model: test_app.owner
+- model: auth.user
   pk: 1
   fields:
+    username: tom
+    first_name: Tom
+    last_name: Smiths
+    is_staff: true
+    is_superuser: true
+
+- model: auth.user
+  pk: 2
+  fields:
+    username: kate
     first_name: Kate
     last_name: Katy
 
-- model: test_app.owner
-  pk: 2
+- model: auth.user
+  pk: 3
   fields:
+    username: paul
     first_name: Paul
     last_name: Paulin
 
@@ -15,18 +26,18 @@
   fields:
     name: Snakey
     race: snake
-    owner: 1
+    owner: 2
 
 - model: test_app.pet
   pk: 2
   fields:
     name: Pawn
     race: cat
-    owner: 2
+    owner: 3
 
 - model: test_app.pet
   pk: 3
   fields:
     name: Rex
     race: dog
-    owner: 2
+    owner: 3
