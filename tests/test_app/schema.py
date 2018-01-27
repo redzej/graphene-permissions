@@ -4,7 +4,7 @@ from graphene_django import DjangoObjectType
 
 from graphene_permissions.mixins import AuthFilter, AuthNode
 from graphene_permissions.permissions import AllowAny, AllowStaff
-from tests.test_app.models import User, Pet
+from tests.test_app.models import Pet, User
 
 
 class UserNode(AuthNode, DjangoObjectType):
@@ -58,7 +58,7 @@ class PetsQuery:
     my_all_pets = AuthFilter(PetNode)
 
     other_pet = graphene.Field(InfoPetNode)
-    other_pets = AuthFilter(InfoPetNode)
+    other_all_pets = AuthFilter(InfoPetNode)
 
 
 class Query(PetsQuery, ObjectType):

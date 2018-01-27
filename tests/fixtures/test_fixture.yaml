@@ -2,6 +2,7 @@
   pk: 1
   fields:
     username: tom
+    password: test
     first_name: Tom
     last_name: Smiths
     is_staff: true
@@ -11,6 +12,7 @@
   pk: 2
   fields:
     username: kate
+    password: test
     first_name: Kate
     last_name: Katy
 
@@ -18,6 +20,7 @@
   pk: 3
   fields:
     username: paul
+    password: test
     first_name: Paul
     last_name: Paulin
 
