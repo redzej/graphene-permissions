@@ -52,7 +52,7 @@ class PetsQuery:
     pet = graphene.Field(PetNode)
     user = graphene.Field(UserNode)
     all_pets = StaffRequiredFilter(PetNode)
-    all_users = StaffRequiredFilter(UserNode)
+    all_owners = StaffRequiredFilter(UserNode)
 
     my_pet = graphene.Field(OwnedPetNode)
     my_all_pets = AuthFilter(PetNode)
