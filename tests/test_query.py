@@ -2,58 +2,59 @@ import pytest
 
 from tests.utils import load_fixtures
 
-#
-# @load_fixtures('tests/fixtures/test_fixture.yaml')
-# @pytest.mark.parametrize('login, password', [
-#     ('tom', 'testpassword'),
-#     ('kate', 'testpassword'),
-#     ('paul', 'testpassword'),
-# ])
-# @pytest.mark.django_db
-# def test_filter_staff_required_permission(client, test_kwargs, login, password):
-#     client.login(username=login, password=password)
-#
-#     query = """
-#     query{
-#         allOwners{
-#             edges{
-#                 node{
-#                     id,
-#                     username,
-#                     firstName,
-#                 }
-#             }
-#         }
-#     }
-#     """
-#
-#     response = client.post(data=query, **test_kwargs)
-#     result = response.json()
-#
-#     if login in ('kate', 'paul'):
-#         assert result['data'] == {
-#             'allOwners': {
-#                 'edges': []
-#             }
-#         }
-#     else:
-#         assert result['data'] == {
-#             'allPets': {
-#                 'edges': [
-#                     {'node': {
-#                         'id': 'QWxsb3dBdXRoZW50aWNhdGVkUGV0Tm9kZTox',
-#                         'name': 'Snakey',
-#                         'race': 'snake'}},
-#                     {'node': {
-#                         'id': 'QWxsb3dBdXRoZW50aWNhdGVkUGV0Tm9kZTox',
-#                         'name': 'Pawn',
-#                         'race': 'cat'}},
-#                     {'node': {
-#                         'id': 'QWxsb3dBbnlQZXROb2RlOjM=',
-#                         'name': 'Rex',
-#                         'race': 'dog'}}
-#                 ]}
-#         }
+
+@load_fixtures('tests/fixtures/test_fixture.yaml')
+@pytest.mark.parametrize('login, password', [
+    ('tom', 'testpassword'),
+    ('kate', 'testpassword'),
+    ('paul', 'testpassword'),
+    (None, None)
+])
+@pytest.mark.django_db
+def test_filter_staff_required_permission(client, test_kwargs, login, password):
+    client.login(username=login, password=password)
+
+    query = """
+    query{
+        allStaffPets{
+            edges{
+                node{
+                    id,
+                    name,
+                    race,
+                }
+            }
+        }
+    }
+    """
+
+    response = client.post(data=query, **test_kwargs)
+    result = response.json()
+
+    if login is 'tom':
+        assert result['data'] == {
+            'allStaffPets': {
+                'edges': [
+                    {'node': {
+                        'id': 'U3RhZmZSZXF1aXJlZFBldE5vZGU6MQ==',
+                        'name': 'Snakey',
+                        'race': 'snake'}},
+                    {'node': {
+                        'id': 'U3RhZmZSZXF1aXJlZFBldE5vZGU6Mg==',
+                        'name': 'Pawn',
+                        'race': 'cat'}},
+                    {'node': {
+                        'id': 'U3RhZmZSZXF1aXJlZFBldE5vZGU6Mw==',
+                        'name': 'Rex',
+                        'race': 'dog'}}
+                ]}
+        }
+    else:
+        assert result['data'] == {
+            'allStaffPets': {
+                'edges': []
+            }
+        }
 
 
 @load_fixtures('tests/fixtures/test_fixture.yaml')
@@ -87,12 +88,6 @@ def test_filter_allow_authenticated_permission(client, test_kwargs, login, passw
     if login in ('tom', 'kate', 'paul'):
         assert result['data'] == {
             'allUserPets': {
-                'edges': []
-            }
-        }
-    else:
-        assert result['data'] == {
-            'allUserPets': {
                 'edges': [
                     {'node': {
                         'id': 'QWxsb3dBdXRoZW50aWNhdGVkUGV0Tm9kZTox',
@@ -107,6 +102,12 @@ def test_filter_allow_authenticated_permission(client, test_kwargs, login, passw
                         'name': 'Rex',
                         'race': 'dog'}}
                 ]}
+        }
+    else:
+        assert result['data'] == {
+            'allUserPets': {
+                'edges': []
+            }
         }
 
 
