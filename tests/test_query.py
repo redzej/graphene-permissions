@@ -1,5 +1,4 @@
 import pytest
-from graphql_relay import to_global_id
 
 from tests.utils import load_fixtures
 

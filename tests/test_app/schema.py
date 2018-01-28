@@ -7,7 +7,7 @@ from graphene.relay import ClientIDMutation
 from graphene_django import DjangoObjectType
 from graphql_relay import from_global_id
 
-from graphene_permissions.mixins import AuthFilter, AuthNode, AuthMutation
+from graphene_permissions.mixins import AuthFilter, AuthMutation, AuthNode
 from graphene_permissions.permissions import (AllowAny, AllowAuthenticated,
                                               AllowStaff)
 from tests.test_app.models import Pet
