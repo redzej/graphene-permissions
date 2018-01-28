@@ -1,4 +1,3 @@
-import graphene
 from graphene import ObjectType, Schema, relay
 from graphene_django import DjangoObjectType
 
@@ -44,13 +43,13 @@ class AllowAuthenticatedFilter(AuthFilter):
 
 
 class PetsQuery:
-    staff_pet = graphene.Field(StaffRequiredPetNode)
+    staff_pet = relay.Node.Field(StaffRequiredPetNode)
     all_staff_pets = StaffRequiredFilter(StaffRequiredPetNode)
 
-    user_pet = graphene.Field(AllowAuthenticatedPetNode)
+    user_pet = relay.Node.Field(AllowAuthenticatedPetNode)
     all_user_pets = AllowAuthenticatedFilter(AllowAuthenticatedPetNode)
 
-    pet = graphene.Field(AllowAnyPetNode)
+    pet = relay.Node.Field(AllowAnyPetNode)
     all_pets = AuthFilter(AllowAnyPetNode)
 
 

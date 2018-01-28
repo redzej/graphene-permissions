@@ -48,7 +48,7 @@ class AllowStaff:
     """
 
     @staticmethod
-    def has_node_permisison(info, id):
+    def has_node_permission(info, id):
         return info.context.user.is_staff
 
     @staticmethod

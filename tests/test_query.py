@@ -11,6 +11,41 @@ from tests.utils import load_fixtures
     (None, None)
 ])
 @pytest.mark.django_db
+def test_node_staff_required_permission(client, test_kwargs, login, password):
+    client.login(username=login, password=password)
+
+    query = """
+    query{
+        staffPet(id: "U3RhZmZSZXF1aXJlZFBldE5vZGU6MQ=="){
+            name,
+            race,
+        }
+    }
+    """
+    response = client.post(data=query, **test_kwargs)
+    result = response.json()
+
+    if login is 'tom':
+        assert result['data'] == {
+            'staffPet': {
+                'name': 'Snakey',
+                'race': 'snake'
+            }
+        }
+    else:
+        assert result['data'] == {
+            'staffPet': None
+        }
+
+
+@load_fixtures('tests/fixtures/test_fixture.yaml')
+@pytest.mark.parametrize('login, password', [
+    ('tom', 'testpassword'),
+    ('kate', 'testpassword'),
+    ('paul', 'testpassword'),
+    (None, None)
+])
+@pytest.mark.django_db
 def test_filter_staff_required_permission(client, test_kwargs, login, password):
     client.login(username=login, password=password)
 
@@ -54,6 +89,41 @@ def test_filter_staff_required_permission(client, test_kwargs, login, password):
             'allStaffPets': {
                 'edges': []
             }
+        }
+
+
+@load_fixtures('tests/fixtures/test_fixture.yaml')
+@pytest.mark.parametrize('login, password', [
+    ('tom', 'testpassword'),
+    ('kate', 'testpassword'),
+    ('paul', 'testpassword'),
+    (None, None)
+])
+@pytest.mark.django_db
+def test_node_allow_authenticated_permission(client, test_kwargs, login, password):
+    client.login(username=login, password=password)
+
+    query = """
+    query{
+        userPet(id: "QWxsb3dBdXRoZW50aWNhdGVkUGV0Tm9kZTox"){
+            name,
+            race,
+        }
+    }
+    """
+    response = client.post(data=query, **test_kwargs)
+    result = response.json()
+
+    if login in ('tom', 'kate', 'paul'):
+        assert result['data'] == {
+            'userPet': {
+                'name': 'Snakey',
+                'race': 'snake'
+            }
+        }
+    else:
+        assert result['data'] == {
+            'userPet': None
         }
 
 
@@ -109,6 +179,36 @@ def test_filter_allow_authenticated_permission(client, test_kwargs, login, passw
                 'edges': []
             }
         }
+
+
+@load_fixtures('tests/fixtures/test_fixture.yaml')
+@pytest.mark.parametrize('login, password', [
+    ('tom', 'testpassword'),
+    ('kate', 'testpassword'),
+    ('paul', 'testpassword'),
+    (None, None)
+])
+@pytest.mark.django_db
+def test_node_allow_any_permission(client, test_kwargs, login, password):
+    client.login(username=login, password=password)
+
+    query = """
+    query{
+        pet(id: "QWxsb3dBbnlQZXROb2RlOjE="){
+            name,
+            race,
+        }
+    }
+    """
+    response = client.post(data=query, **test_kwargs)
+    result = response.json()
+
+    assert result['data'] == {
+        'pet': {
+            'name': 'Snakey',
+            'race': 'snake'
+        }
+    }
 
 
 @load_fixtures('tests/fixtures/test_fixture.yaml')
