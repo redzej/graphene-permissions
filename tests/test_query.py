@@ -1,4 +1,5 @@
 import pytest
+from graphql_relay import to_global_id
 
 from tests.utils import load_fixtures
 
@@ -213,9 +214,9 @@ def test_node_allow_any_permission(client, test_kwargs, login, password):
 
 @load_fixtures('tests/fixtures/test_fixture.yaml')
 @pytest.mark.parametrize('login, password', [
-    ('tom', 'test'),
-    ('kate', 'test'),
-    ('paul', 'test'),
+    ('tom', 'testpassword'),
+    ('kate', 'testpassword'),
+    ('paul', 'testpassword'),
     (None, None),
 ])
 @pytest.mark.django_db

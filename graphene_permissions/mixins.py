@@ -37,7 +37,7 @@ class AuthFilter(DjangoFilterConnectionField):
     @classmethod
     def has_permission(cls, info):
         return all(
-            [permission().has_filter_permission(info) for permission in cls.permission_classes]
+            [perm().has_filter_permission(info) for perm in cls.permission_classes]
         )
 
     @classmethod
