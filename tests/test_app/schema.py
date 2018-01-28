@@ -1,34 +1,60 @@
-import graphene
-from graphene import Schema, relay
+from graphene import ObjectType, Schema, relay
 from graphene_django import DjangoObjectType
 
 from graphene_permissions.mixins import AuthFilter, AuthNode
-from graphene_permissions.permissions import AllowStaff
-from tests.test_app.models import Owner, Pet
+from graphene_permissions.permissions import (AllowAny, AllowAuthenticated,
+                                              AllowStaff)
+from tests.test_app.models import Pet
 
 
-class OwnerNode(AuthNode, DjangoObjectType):
-    permission_classes = (AllowStaff,)
-
-    class Meta:
-        model = Owner
-        interfaces = (relay.Node,)
-
-
-class PetNode(AuthNode, DjangoObjectType):
+class StaffRequiredPetNode(AuthNode, DjangoObjectType):
     permission_classes = (AllowStaff,)
 
     class Meta:
         model = Pet
+        filter_fields = ('name',)
         interfaces = (relay.Node,)
 
 
+class AllowAuthenticatedPetNode(AuthNode, DjangoObjectType):
+    permission_classes = (AllowAuthenticated,)
+
+    class Meta:
+        model = Pet
+        filter_fields = ('name',)
+        interfaces = (relay.Node,)
+
+
+class AllowAnyPetNode(AuthNode, DjangoObjectType):
+    permission_classes = (AllowAny,)
+
+    class Meta:
+        model = Pet
+        filter_fields = ('name',)
+        interfaces = (relay.Node,)
+
+
+class StaffRequiredFilter(AuthFilter):
+    permission_classes = (AllowStaff,)
+
+
+class AllowAuthenticatedFilter(AuthFilter):
+    permission_classes = (AllowAuthenticated,)
+
+
 class PetsQuery:
-    pet = graphene.Field(PetNode)
-    owner = graphene.Field(OwnerNode)
+    staff_pet = relay.Node.Field(StaffRequiredPetNode)
+    all_staff_pets = StaffRequiredFilter(StaffRequiredPetNode)
 
-    all_pets = AuthFilter(PetNode)
-    all_owners = AuthFilter(OwnerNode)
+    user_pet = relay.Node.Field(AllowAuthenticatedPetNode)
+    all_user_pets = AllowAuthenticatedFilter(AllowAuthenticatedPetNode)
+
+    pet = relay.Node.Field(AllowAnyPetNode)
+    all_pets = AuthFilter(AllowAnyPetNode)
 
 
-schema = Schema(query=PetsQuery)
+class Query(PetsQuery, ObjectType):
+    pass
+
+
+schema = Schema(query=Query)
