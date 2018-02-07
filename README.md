@@ -35,17 +35,20 @@ To enforce permission system, add appropriate mixin and set attribute `permissio
 
 
 ```python
+### models.py
 from django.db import models
-from graphene import relay
-from graphene_django import DjangoObjectType
-from graphene_permissions.mixins import AuthNode, AuthMutation, AuthFilter
-from graphene_permissions.permissions import AllowAny, AllowAuthenticated, AllowStaff
 
 
 class Pet(models.Model):
     name = models.CharField(max_length=32)
     race = models.CharField(max_length=64)
-    
+```
+```python
+### schema.py
+from graphene import relay
+from graphene_django import DjangoObjectType
+from graphene_permissions.mixins import AuthNode, AuthMutation, AuthFilter
+from graphene_permissions.permissions import AllowAny, AllowAuthenticated, AllowStaff
 
 
 class PetNode(AuthNode, DjangoObjectType):
@@ -55,7 +58,6 @@ class PetNode(AuthNode, DjangoObjectType):
         model = Pet
         filter_fields = ('name',)
         interfaces = (relay.Node,)
-
 ```
 
 
