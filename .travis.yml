@@ -1,0 +1,21 @@
+language: python
+
+cache: pip
+
+python:
+    - 3.5
+    - 3.6
+    - 3.7-dev
+    - nightly
+
+env:
+    - DJANGO_VERSION=2.0
+    - DJANGO_VERSION=2.0.1
+
+install:
+    - pip install Django==$DJANGO_VERSION
+    - pip install -r requirements/requirements.txt
+    - pip install -r requirements/requirements-test.txt
+
+script:
+    - flake8

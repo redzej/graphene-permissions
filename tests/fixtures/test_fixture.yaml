@@ -1,0 +1,46 @@
+- model: auth.user
+  pk: 1
+  fields:
+    username: tom
+    password: pbkdf2_sha256$100000$AKKnjXeTLZ7V$o6UAPZXAiqfW9hOnzXRs4+FxfeVR/qm8kQb/iIrGmEI=
+    first_name: Tom
+    last_name: Smiths
+    is_staff: true
+    is_superuser: true
+
+- model: auth.user
+  pk: 2
+  fields:
+    username: kate
+    password: pbkdf2_sha256$100000$AKKnjXeTLZ7V$o6UAPZXAiqfW9hOnzXRs4+FxfeVR/qm8kQb/iIrGmEI=
+    first_name: Kate
+    last_name: Katy
+
+- model: auth.user
+  pk: 3
+  fields:
+    username: paul
+    password: pbkdf2_sha256$100000$AKKnjXeTLZ7V$o6UAPZXAiqfW9hOnzXRs4+FxfeVR/qm8kQb/iIrGmEI=
+    first_name: Paul
+    last_name: Paulin
+
+- model: test_app.pet
+  pk: 1
+  fields:
+    name: Snakey
+    race: snake
+    owner: 2
+
+- model: test_app.pet
+  pk: 2
+  fields:
+    name: Pawn
+    race: cat
+    owner: 3
+
+- model: test_app.pet
+  pk: 3
+  fields:
+    name: Rex
+    race: dog
+    owner: 3
