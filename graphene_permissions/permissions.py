@@ -25,21 +25,15 @@ class AllowAuthenticated:
 
     @staticmethod
     def has_node_permission(info, id):
-        if hasattr(info.context, 'user'):
-            return info.context.user.is_authenticated
-        return False
+        return info.context.user.is_authenticated
 
     @staticmethod
     def has_mutation_permission(root, info, input):
-        if hasattr(info.context, 'user'):
-            return info.context.user.is_authenticated
-        return False
+        return info.context.user.is_authenticated
 
     @staticmethod
     def has_filter_permission(info):
-        if hasattr(info.context, 'user'):
-            return info.context.user.is_authenticated
-        return False
+        return info.context.user.is_authenticated
 
 
 class AllowStaff:
