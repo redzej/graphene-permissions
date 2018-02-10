@@ -256,3 +256,30 @@ def test_filter_allow_any_permission(client, test_kwargs, login, password):
                     'race': 'dog'}}
             ]}
     }
+
+
+@load_fixtures('tests/fixtures/test_fixture.yaml')
+@pytest.mark.parametrize('login, password', [
+    ('tom', 'testpassword'),
+    ('kate', 'testpassword'),
+    ('paul', 'testpassword'),
+    (None, None)
+])
+@pytest.mark.django_db
+def test_node_non_existent_object(client, test_kwargs, login, password):
+    client.login(username=login, password=password)
+
+    query = """
+    query{
+        pet(id: "QWxsb3dBbnlQZXROb2RlOjE1"){
+            name,
+            race,
+        }
+    }
+    """
+    response = client.post(data=query, **test_kwargs)
+    result = response.json()
+
+    assert result['data'] == {
+        'pet': None
+    }
