@@ -120,8 +120,9 @@ class AllowMutationForStaff(AllowAuthenticated):
         
     @staticmethod
     def has_mutation_permission(root, info, input):
-        # logic here
-        # return boolean
+        if info.request.user.is_staff:
+            return True
+        return False
        
     @staticmethod
     def has_filter_permission(info):
