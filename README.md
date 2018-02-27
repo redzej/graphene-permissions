@@ -60,7 +60,7 @@ class PetNode(AuthNode, DjangoObjectType):
 
 ## Docs
 
-# Setting up permission check
+#### Setting up permission check
 For queries use `AuthNode` mixin and inherite from `AuthFilter` class.
 ```python
 class AllowAuthenticatedPetNode(AuthNode, DjangoObjectType):
@@ -83,9 +83,9 @@ class PetsQuery:
 
 For mutations use `AuthMutation` mixin.
 ```python
-class AddPet(AuthMutation, ClientIDMutation):
-    permission_classes = (AllowAny,)
-    pet = graphene.Field(AllowAnyPetNode)
+class AuthenticatedAddPet(AuthMutation, ClientIDMutation):
+    permission_classes = (AllowAuthenticated,)
+    pet = graphene.Field(AllowAuthenticatedPetNode)
 
     class Input:
         name = graphene.String()
@@ -97,12 +97,47 @@ class AddPet(AuthMutation, ClientIDMutation):
         if cls.has_permission(root, info, input):
             owner = User.objects.get(pk=from_global_id(input['owner'])[1])
             pet = Pet.objects.create(name=input['name'], race=input['race'], owner=owner)
-            return AddPet(pet=pet)
-        return AddPet(pet=None)
+            return AuthenticatedAddPet(pet=pet)
+        return AuthenticatedAddPet(pet=None)
+
         
 class PetsMutation:
     authenticated_add_pet = AuthenticatedAddPet.Field()
 ```
 
-# Customizing permission classes
+#### Customizing permission classes
 Default permission classes are: `AllowAny`, `AllowAuthenticated`, `AllowStaff`.
+You can set up equal permission for both queries and mutations with one class, simply subclass one of these classes 
+and to limit access for given object, override appropriate method. Remember to return `true` if user should be given 
+access and `false`, if denied.
+
+```python
+class AllowMutationForStaff(AllowAuthenticated):
+    @staticmethod
+    def has_node_permission(info, id):
+        # logic here 
+        # return boolean
+        
+    @staticmethod
+    def has_mutation_permission(root, info, input):
+        # logic here
+        # return boolean
+       
+    @staticmethod
+    def has_filter_permission(info):
+        # logic here
+        # return boolean
+```
+
+#### Multiple permissions
+You can set up multiple permissions checks, simply adding more classes. Permission is evaluated for every class.
+If one of the checks fails, access is denied.
+
+```python
+class CustomPetNode(AuthNode, DjangoObjectType):
+    permission_classes = (AllowAuthenticated, AllowStaff, AllowCustom)
+    
+    class Meta:
+        model = Pet
+        interfaces = (relay.Node,)
+```
