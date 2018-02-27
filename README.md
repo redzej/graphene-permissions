@@ -12,8 +12,6 @@
 DRF-inspired permission system based on classes for graphene-django. Allows easy customization of permission classes for
 for queries and mutations.
 
-At this moment, only relay is supported.
-
 
 ## Requirements
 
@@ -29,7 +27,7 @@ Install using pip:
 pip install graphene-permissions
 ```
 
-## Usage
+## Example
 
 To enforce permission system, add appropriate mixin and set attribute `permission_classes`.
 
@@ -47,8 +45,8 @@ class Pet(models.Model):
 ### schema.py
 from graphene import relay
 from graphene_django import DjangoObjectType
-from graphene_permissions.mixins import AuthNode, AuthMutation, AuthFilter
-from graphene_permissions.permissions import AllowAny, AllowAuthenticated, AllowStaff
+from graphene_permissions.mixins import AuthNode
+from graphene_permissions.permissions import AllowAuthenticated
 
 
 class PetNode(AuthNode, DjangoObjectType):
@@ -60,5 +58,51 @@ class PetNode(AuthNode, DjangoObjectType):
         interfaces = (relay.Node,)
 ```
 
+## Docs
+
+# Setting up permission check
+For queries use `AuthNode` mixin and inherite from `AuthFilter` class.
+```python
+class AllowAuthenticatedPetNode(AuthNode, DjangoObjectType):
+    permission_classes = (AllowAuthenticated,)
+
+    class Meta:
+        model = Pet
+        filter_fields = ('name',)
+        interfaces = (relay.Node,)
 
 
+class AllowAuthenticatedFilter(AuthFilter):
+    permission_classes = (AllowAuthenticated,)
+
+
+class PetsQuery:
+    user_pet = relay.Node.Field(AllowAuthenticatedPetNode)
+    all_user_pets = AllowAuthenticatedFilter(AllowAuthenticatedPetNode)
+```
+
+For mutations use `AuthMutation` mixin.
+```python
+class AddPet(AuthMutation, ClientIDMutation):
+    permission_classes = (AllowAny,)
+    pet = graphene.Field(AllowAnyPetNode)
+
+    class Input:
+        name = graphene.String()
+        race = graphene.String()
+        owner = graphene.ID()
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, **input):
+        if cls.has_permission(root, info, input):
+            owner = User.objects.get(pk=from_global_id(input['owner'])[1])
+            pet = Pet.objects.create(name=input['name'], race=input['race'], owner=owner)
+            return AddPet(pet=pet)
+        return AddPet(pet=None)
+        
+class PetsMutation:
+    authenticated_add_pet = AuthenticatedAddPet.Field()
+```
+
+# Customizing permission classes
+Default permission classes are: `AllowAny`, `AllowAuthenticated`, `AllowStaff`.
