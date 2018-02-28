@@ -60,7 +60,7 @@ class PetNode(AuthNode, DjangoObjectType):
 
 ## Docs
 
-#### Setting up permission check
+### Setting up permission check
 For queries use `AuthNode` mixin and inherite from `AuthFilter` class.
 ```python
 class AllowAuthenticatedPetNode(AuthNode, DjangoObjectType):
@@ -105,7 +105,7 @@ class PetsMutation:
     authenticated_add_pet = AuthenticatedAddPet.Field()
 ```
 
-#### Customizing permission classes
+### Customizing permission classes
 Default permission classes are: `AllowAny`, `AllowAuthenticated`, `AllowStaff`.
 You can set up equal permission for both queries and mutations with one class, simply subclass one of these classes 
 and to limit access for given object, override appropriate method. Remember to return `true` if user should be given 
@@ -130,7 +130,7 @@ class AllowMutationForStaff(AllowAuthenticated):
         # return boolean
 ```
 
-#### Multiple permissions
+### Multiple permissions
 You can set up multiple permissions checks, simply adding more classes. Permission is evaluated for every class.
 If one of the checks fails, access is denied.
 
