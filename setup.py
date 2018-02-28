@@ -22,10 +22,10 @@ setup(
     description='Simple graphene-django permission system',
     long_description=long_description,
     url='https://github.com/redzej/graphene-permissions',
-    download_url='https://github.com/redzej/graphene-permissions',
+    download_url='https://github.com/redzej/graphene-permissions/archive/1.0.0.tar.gz',
     install_requires=[str(ir.req) for ir in install_requirements],
     keywords='graphene django permissions permission system',
-    python_requires='>=3.4',
+    python_requires='>=3.5',
     classifiers=(
         'Development Status :: 5 - Production',
         'Operating System :: OS Independent',
