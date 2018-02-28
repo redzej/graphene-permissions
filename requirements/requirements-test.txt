@@ -5,3 +5,4 @@ python-coveralls==2.9.1
 flake8==3.5.0
 pyyaml==3.12
 isort==4.3.3
+twine==1.9.1
