@@ -27,7 +27,7 @@ setup(
     keywords='graphene django permissions permission system',
     python_requires='>=3.5',
     classifiers=(
-        'Development Status :: 5 - Production',
+        'Development Status :: 5 - Production/Stable',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
