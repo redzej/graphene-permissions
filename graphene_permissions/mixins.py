@@ -1,5 +1,4 @@
 from graphene_django.filter import DjangoFilterConnectionField
-
 from graphene_permissions.permissions import AllowAny
 
 

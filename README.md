@@ -2,7 +2,7 @@
 
 **Permission system for graphene-django apps.**
 
-[![Build Status](https://travis-ci.org/redzej/graphene-permissions.svg?branch=travis-config)](https://travis-ci.org/redzej/graphene-permissions)
+[![Build Status](https://travis-ci.org/redzej/graphene-permissions.svg?branch=master)](https://travis-ci.org/redzej/graphene-permissions)
 [![PyPI version](https://badge.fury.io/py/graphene-permissions.svg)](https://badge.fury.io/py/graphene-permissions)
 [![Coverage Status](https://coveralls.io/repos/github/redzej/graphene-permissions/badge.svg?branch=master)](https://coveralls.io/github/redzej/graphene-permissions?branch=master)
 
