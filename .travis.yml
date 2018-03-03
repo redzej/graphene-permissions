@@ -17,5 +17,4 @@ install:
 
 script:
     - flake8
-    - isort
     - pytest
