@@ -9,6 +9,9 @@ python:
 env:
     - DJANGO_VERSION=2.0
     - DJANGO_VERSION=2.0.1
+    - DJANGO_VERSION=2.0.2
+    - DJANGO_VERSION=2.0.3
+    - DJANGO_VERSION=2.0.4
 
 install:
     - pip install Django==$DJANGO_VERSION
@@ -18,3 +21,4 @@ install:
 script:
     - flake8
     - pytest
+    - mypy graphene_permissions --ignore-missing
