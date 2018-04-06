@@ -5,12 +5,10 @@ from django.contrib.auth.models import User
 from graphene import ObjectType, Schema, relay
 from graphene.relay import ClientIDMutation
 from graphene_django import DjangoObjectType
-from graphene_permissions.mixins import AuthFilter, AuthMutation, AuthNode
-
-from graphene_permissions.permissions import AllowAny, AllowAuthenticated, AllowStaff
-
 from graphql_relay import from_global_id
 
+from graphene_permissions.mixins import AuthFilter, AuthMutation, AuthNode
+from graphene_permissions.permissions import AllowAny, AllowAuthenticated, AllowStaff
 from tests.test_app.models import Pet
 
 

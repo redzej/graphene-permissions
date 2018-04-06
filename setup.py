@@ -1,4 +1,3 @@
-
 from pip.download import PipSession
 from pip.req import parse_requirements
 from setuptools import setup
