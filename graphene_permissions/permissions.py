@@ -1,3 +1,6 @@
+from graphql import ResolveInfo
+
+
 class AllowAny:
     """
     Default authentication class.
@@ -6,15 +9,15 @@ class AllowAny:
     """
 
     @staticmethod
-    def has_node_permission(info, id):
+    def has_node_permission(info: ResolveInfo, id: str) -> bool:
         return True
 
     @staticmethod
-    def has_mutation_permission(root, info, input):
+    def has_mutation_permission(root, info: ResolveInfo, input: dict) -> bool:
         return True
 
     @staticmethod
-    def has_filter_permission(info):
+    def has_filter_permission(info: ResolveInfo) -> bool:
         return True
 
 
@@ -24,15 +27,15 @@ class AllowAuthenticated:
     """
 
     @staticmethod
-    def has_node_permission(info, id):
+    def has_node_permission(info: ResolveInfo, id: str) -> bool:
         return info.context.user.is_authenticated
 
     @staticmethod
-    def has_mutation_permission(root, info, input):
+    def has_mutation_permission(root, info: ResolveInfo, input: dict) -> bool:
         return info.context.user.is_authenticated
 
     @staticmethod
-    def has_filter_permission(info):
+    def has_filter_permission(info: ResolveInfo) -> bool:
         return info.context.user.is_authenticated
 
 
@@ -42,13 +45,13 @@ class AllowStaff:
     """
 
     @staticmethod
-    def has_node_permission(info, id):
+    def has_node_permission(info: ResolveInfo, id: str) -> bool:
         return info.context.user.is_staff
 
     @staticmethod
-    def has_mutation_permission(root, info, input):
+    def has_mutation_permission(root, info: ResolveInfo, input: dict) -> bool:
         return info.context.user.is_staff
 
     @staticmethod
-    def has_filter_permission(info):
+    def has_filter_permission(info: ResolveInfo) -> bool:
         return info.context.user.is_staff

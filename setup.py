@@ -1,7 +1,9 @@
-from graphene_permissions import __version__
+
 from pip.download import PipSession
 from pip.req import parse_requirements
 from setuptools import setup
+
+from graphene_permissions import __version__
 
 with open('README.md', encoding="utf-8") as f:
     long_description = f.read()
