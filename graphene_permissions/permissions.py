@@ -1,3 +1,5 @@
+from typing import Any
+
 from graphql import ResolveInfo
 
 
@@ -13,7 +15,7 @@ class AllowAny:
         return True
 
     @staticmethod
-    def has_mutation_permission(root, info: ResolveInfo, input: dict) -> bool:
+    def has_mutation_permission(root: Any, info: ResolveInfo, input: dict) -> bool:
         return True
 
     @staticmethod
@@ -31,7 +33,7 @@ class AllowAuthenticated:
         return info.context.user.is_authenticated
 
     @staticmethod
-    def has_mutation_permission(root, info: ResolveInfo, input: dict) -> bool:
+    def has_mutation_permission(root: Any, info: ResolveInfo, input: dict) -> bool:
         return info.context.user.is_authenticated
 
     @staticmethod
@@ -49,7 +51,7 @@ class AllowStaff:
         return info.context.user.is_staff
 
     @staticmethod
-    def has_mutation_permission(root, info: ResolveInfo, input: dict) -> bool:
+    def has_mutation_permission(root: Any, info: ResolveInfo, input: dict) -> bool:
         return info.context.user.is_staff
 
     @staticmethod

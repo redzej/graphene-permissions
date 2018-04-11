@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 from django.db.models import Model
 from graphene_django.filter import DjangoFilterConnectionField
@@ -8,6 +8,9 @@ from graphene_permissions.permissions import AllowAny
 
 
 class AuthNode:
+    """
+    Permission mixin for queries (nodes).
+    """
     permission_classes = (AllowAny,)
 
     @classmethod
@@ -23,10 +26,13 @@ class AuthNode:
 
 
 class AuthMutation:
+    """
+    Permission mixin for ClientIdMutation.
+    """
     permission_classes = (AllowAny,)
 
     @classmethod
-    def has_permission(cls, root, info: dict, input: dict) -> bool:
+    def has_permission(cls, root: Any, info: dict, input: dict) -> bool:
         return all(
             [perm().has_mutation_permission(root, info, input) for perm in cls.permission_classes]
         )
@@ -34,7 +40,7 @@ class AuthMutation:
 
 class AuthFilter(DjangoFilterConnectionField):
     """
-    Custom ConnectionField for basic authentication system.
+    Custom ConnectionField for permission system.
     """
     permission_classes = (AllowAny,)
 
