@@ -1,13 +1,12 @@
-from pip.download import PipSession
-from pip.req import parse_requirements
 from setuptools import setup
 
 from graphene_permissions import __version__
 
-with open('README.md', encoding="utf-8") as f:
+with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
 
-install_requirements = parse_requirements('requirements/requirements.txt', session=PipSession())
+with open('requirements/requirements.txt') as f:
+    install_requirements = f.readlines()
 
 setup(
     name='graphene-permissions',
@@ -18,7 +17,7 @@ setup(
     description='Simple graphene-django permission system.',
     long_description=long_description,
     url='https://github.com/redzej/graphene-permissions',
-    install_requires=[str(ir.req) for ir in install_requirements],
+    install_requires=install_requirements,
     keywords='graphene django permissions permission system',
     python_requires='>=3.5',
     classifiers=(
