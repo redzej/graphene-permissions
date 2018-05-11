@@ -10,12 +10,13 @@ from graphene_permissions.permissions import AllowAny
 class AuthNode:
     """
     Permission mixin for queries (nodes).
+    Allows for simple configuration of access to nodes via class system.
     """
     permission_classes = (AllowAny,)
 
     @classmethod
     def get_node(cls, info: ResolveInfo, id: str) -> Optional[Model]:
-        if all([perm().has_node_permission(info, id) for perm in cls.permission_classes]):
+        if all((perm().has_node_permission(info, id) for perm in cls.permission_classes)):
             try:
                 object_instance = cls._meta.model.objects.get(id=id)  # type: ignore
             except cls._meta.model.DoesNotExist:  # type: ignore
@@ -32,9 +33,9 @@ class AuthMutation:
     permission_classes = (AllowAny,)
 
     @classmethod
-    def has_permission(cls, root: Any, info: dict, input: dict) -> bool:
+    def has_permission(cls, root: Any, info: ResolveInfo, input: dict) -> bool:
         return all(
-            [perm().has_mutation_permission(root, info, input) for perm in cls.permission_classes]
+            (perm().has_mutation_permission(root, info, input) for perm in cls.permission_classes)
         )
 
 
@@ -47,7 +48,7 @@ class AuthFilter(DjangoFilterConnectionField):
     @classmethod
     def has_permission(cls, info: ResolveInfo) -> bool:
         return all(
-            [perm().has_filter_permission(info) for perm in cls.permission_classes]
+            (perm().has_filter_permission(info) for perm in cls.permission_classes)
         )
 
     @classmethod
@@ -65,8 +66,8 @@ class AuthFilter(DjangoFilterConnectionField):
 
         if not cls.has_permission(info):
             return super(DjangoFilterConnectionField, cls).connection_resolver(
-                resolver, connection, qs.none(),
-                max_limit, enforce_first_or_last, root, info, **args
+                resolver, connection, qs.none(), max_limit, enforce_first_or_last,
+                root, info, **args,
             )
 
         return super(DjangoFilterConnectionField, cls).connection_resolver(
