@@ -13,7 +13,6 @@ class AuthNode:
     Allows for simple configuration of access to nodes via class system.
     """
     permission_classes = (AllowAny,)
-    permission_denied_exception = None
 
     @classmethod
     def get_node(cls, info: ResolveInfo, id: str) -> Optional[Model]:
@@ -24,8 +23,6 @@ class AuthNode:
                 object_instance = None
             return object_instance
         else:
-            if cls.permission_denied_exception:
-                raise cls.permission_denied_exception
             return None
 
 
@@ -34,7 +31,6 @@ class AuthMutation:
     Permission mixin for ClientIdMutation.
     """
     permission_classes = (AllowAny,)
-    permission_denied_exception = None
 
     @classmethod
     def has_permission(cls, root: Any, info: ResolveInfo, input: dict) -> bool:
@@ -48,7 +44,6 @@ class AuthFilter(DjangoFilterConnectionField):
     Custom ConnectionField for permission system.
     """
     permission_classes = (AllowAny,)
-    permission_denied_exception = None
 
     @classmethod
     def has_permission(cls, info: ResolveInfo) -> bool:
@@ -70,8 +65,6 @@ class AuthFilter(DjangoFilterConnectionField):
         ).qs
 
         if not cls.has_permission(info):
-            if cls.permission_denied_exception:
-                raise cls.permission_denied_exception
             return super(DjangoFilterConnectionField, cls).connection_resolver(
                 resolver, connection, qs.none(), max_limit, enforce_first_or_last,
                 root, info, **args,

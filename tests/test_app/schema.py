@@ -8,8 +8,22 @@ from graphene_django import DjangoObjectType
 from graphql_relay import from_global_id
 
 from graphene_permissions.mixins import AuthFilter, AuthMutation, AuthNode
-from graphene_permissions.permissions import AllowAny, AllowAuthenticated, AllowStaff
+from graphene_permissions.permissions import (
+    AllowAny,
+    AllowAuthenticated,
+    AllowStaff,
+    AllowSuperuser,
+)
 from tests.test_app.models import Pet
+
+
+class SuperUserRequiredPetNode(AuthNode, DjangoObjectType):
+    permission_classes = (AllowSuperuser,)
+
+    class Meta:
+        model = Pet
+        filter_fields = ('name',)
+        interfaces = (relay.Node,)
 
 
 class StaffRequiredPetNode(AuthNode, DjangoObjectType):
@@ -39,6 +53,10 @@ class AllowAnyPetNode(AuthNode, DjangoObjectType):
         interfaces = (relay.Node,)
 
 
+class SuperUserRequiredFilter(AuthFilter):
+    permission_classes = (AllowSuperuser,)
+
+
 class StaffRequiredFilter(AuthFilter):
     permission_classes = (AllowStaff,)
 
@@ -48,6 +66,9 @@ class AllowAuthenticatedFilter(AuthFilter):
 
 
 class PetsQuery:
+    superuser_pet = relay.Node.Field(SuperUserRequiredPetNode)
+    all_superuser_pets = SuperUserRequiredFilter(SuperUserRequiredPetNode)
+
     staff_pet = relay.Node.Field(StaffRequiredPetNode)
     all_staff_pets = StaffRequiredFilter(StaffRequiredPetNode)
 
@@ -56,6 +77,26 @@ class PetsQuery:
 
     pet = relay.Node.Field(AllowAnyPetNode)
     all_pets = AuthFilter(AllowAnyPetNode)
+
+
+class SuperUserAddPet(AuthMutation, ClientIDMutation):
+    permission_classes = (AllowSuperuser,)
+
+    class Input:
+        name = graphene.String()
+        race = graphene.String()
+        owner = graphene.ID()
+
+    pet = graphene.Field(AllowAnyPetNode)
+    status = graphene.Int()
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, **input):
+        if cls.has_permission(root, info, input):
+            owner = User.objects.get(pk=from_global_id(input['owner'])[1])
+            pet = Pet.objects.create(name=input['name'], race=input['race'], owner=owner)
+            return SuperUserAddPet(pet=pet, status=HTTPStatus.CREATED)
+        return SuperUserAddPet(pet=None, status=HTTPStatus.BAD_REQUEST)
 
 
 class StaffAddPet(AuthMutation, ClientIDMutation):
@@ -74,8 +115,8 @@ class StaffAddPet(AuthMutation, ClientIDMutation):
         if cls.has_permission(root, info, input):
             owner = User.objects.get(pk=from_global_id(input['owner'])[1])
             pet = Pet.objects.create(name=input['name'], race=input['race'], owner=owner)
-            return AddPet(pet=pet, status=HTTPStatus.CREATED)
-        return AddPet(pet=None, status=HTTPStatus.BAD_REQUEST)
+            return StaffAddPet(pet=pet, status=HTTPStatus.CREATED)
+        return StaffAddPet(pet=None, status=HTTPStatus.BAD_REQUEST)
 
 
 class AuthenticatedAddPet(AuthMutation, ClientIDMutation):
@@ -119,6 +160,7 @@ class AddPet(AuthMutation, ClientIDMutation):
 
 
 class PetsMutation:
+    superuser_add_pet = SuperUserAddPet.Field()
     staff_add_pet = StaffAddPet.Field()
     authenticated_add_pet = AuthenticatedAddPet.Field()
     add_pet = AddPet.Field()
