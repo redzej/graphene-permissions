@@ -5,6 +5,7 @@
 [![Build Status](https://travis-ci.org/redzej/graphene-permissions.svg?branch=master)](https://travis-ci.org/redzej/graphene-permissions)
 [![PyPI version](https://badge.fury.io/py/graphene-permissions.svg)](https://badge.fury.io/py/graphene-permissions)
 [![Coverage Status](https://coveralls.io/repos/github/redzej/graphene-permissions/badge.svg?branch=master)](https://coveralls.io/github/redzej/graphene-permissions?branch=master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/12b39435f888adf2370b/maintainability)](https://codeclimate.com/github/redzej/graphene-permissions/maintainability)
 
 
 ## Overview
