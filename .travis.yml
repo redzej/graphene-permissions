@@ -10,6 +10,9 @@ env:
     - DJANGO_VERSION=2.1.*
     - DJANGO_VERSION=2.2.*
 
+before_install:
+    - sudo apt-get install sqlite3 libsqlite3-dev
+
 install:
     - pip install Django==$DJANGO_VERSION
     - pip install -e .
