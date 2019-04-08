@@ -26,7 +26,7 @@ def test_node_superuser_required_permission(client, test_kwargs, login, password
     response = client.post(data=query, **test_kwargs)
     result = response.json()
 
-    if login is 'tom':
+    if login == 'tom':
 
         assert result['data'] == {
             'superuserPet': {
@@ -66,7 +66,7 @@ def test_filter_superuser_required_permission(client, test_kwargs, login, passwo
     response = client.post(data=query, **test_kwargs)
     result = response.json()
 
-    if login is 'tom':
+    if login == 'tom':
         assert result['data'] == {
             'allSuperuserPets': {
                 'edges': [
@@ -114,7 +114,7 @@ def test_node_staff_required_permission(client, test_kwargs, login, password):
     response = client.post(data=query, **test_kwargs)
     result = response.json()
 
-    if login is 'tom':
+    if login == 'tom':
         assert result['data'] == {
             'staffPet': {
                 'name': 'Snakey',
@@ -155,7 +155,7 @@ def test_filter_staff_required_permission(client, test_kwargs, login, password):
     response = client.post(data=query, **test_kwargs)
     result = response.json()
 
-    if login is 'tom':
+    if login == 'tom':
         assert result['data'] == {
             'allStaffPets': {
                 'edges': [

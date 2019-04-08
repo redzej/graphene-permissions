@@ -16,6 +16,7 @@ setup(
     author='redzej',
     description='Simple graphene-django permission system.',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/redzej/graphene-permissions',
     install_requires=install_requirements,
     keywords='graphene django permissions permission system',
