@@ -29,7 +29,7 @@ def test_mutation_superuser_required_permission(client, test_kwargs, login, pass
     response = client.post(data=mutation, **test_kwargs)
     result = response.json()
 
-    if login is 'tom':
+    if login == 'tom':
         assert result['data'] == {
             'superuserAddPet': {
                 'pet': {
@@ -74,7 +74,7 @@ def test_mutation_staff_required_permission(client, test_kwargs, login, password
     response = client.post(data=mutation, **test_kwargs)
     result = response.json()
 
-    if login is 'tom':
+    if login == 'tom':
         assert result['data'] == {
             'staffAddPet': {
                 'pet': {
