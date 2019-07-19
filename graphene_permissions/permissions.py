@@ -3,75 +3,68 @@ from typing import Any
 from graphql import ResolveInfo
 
 
-class AllowAny:
+class BasePermission:
     """
-    Default authentication class.
-    Allows any user for any action.
+    Base permission class.
     Subclass it and override methods below.
     """
 
-    @staticmethod
-    def has_node_permission(info: ResolveInfo, id: str) -> bool:
+    @classmethod
+    def has_permission(cls, info: ResolveInfo) -> bool:
+        """Fallback for other has_..._permission functions.
+        Returns False by default, overwrite for custom behaviour.
+        """
+        return False
+
+    @classmethod
+    def has_node_permission(cls, info: ResolveInfo, id: str) -> bool:
+        return cls.has_permission(info)
+
+    @classmethod
+    def has_mutation_permission(cls, root: Any, info: ResolveInfo, input: dict) -> bool:
+        return cls.has_permission(info)
+
+    @classmethod
+    def has_filter_permission(cls, info: ResolveInfo) -> bool:
+        return cls.has_permission(info)
+
+
+class AllowAny(BasePermission):
+    """
+    Default authentication class.
+    Allows any user for any action.
+    """
+
+    @classmethod
+    def has_permission(cls, info: ResolveInfo) -> bool:
         return True
 
-    @staticmethod
-    def has_mutation_permission(root: Any, info: ResolveInfo, input: dict) -> bool:
-        return True
 
-    @staticmethod
-    def has_filter_permission(info: ResolveInfo) -> bool:
-        return True
-
-
-class AllowAuthenticated:
+class AllowAuthenticated(BasePermission):
     """
     Allows performing action only for logged in users.
     """
 
-    @staticmethod
-    def has_node_permission(info: ResolveInfo, id: str) -> bool:
-        return info.context.user.is_authenticated
-
-    @staticmethod
-    def has_mutation_permission(root: Any, info: ResolveInfo, input: dict) -> bool:
-        return info.context.user.is_authenticated
-
-    @staticmethod
-    def has_filter_permission(info: ResolveInfo) -> bool:
+    @classmethod
+    def has_permission(cls, info: ResolveInfo) -> bool:
         return info.context.user.is_authenticated
 
 
-class AllowStaff:
+class AllowStaff(BasePermission):
     """
     Allow performing action only for staff users.
     """
 
-    @staticmethod
-    def has_node_permission(info: ResolveInfo, id: str) -> bool:
-        return info.context.user.is_staff
-
-    @staticmethod
-    def has_mutation_permission(root: Any, info: ResolveInfo, input: dict) -> bool:
-        return info.context.user.is_staff
-
-    @staticmethod
-    def has_filter_permission(info: ResolveInfo) -> bool:
+    @classmethod
+    def has_permission(cls, info: ResolveInfo) -> bool:
         return info.context.user.is_staff
 
 
-class AllowSuperuser:
+class AllowSuperuser(BasePermission):
     """
     Allow performing action only for superusers.
     """
 
-    @staticmethod
-    def has_node_permission(info: ResolveInfo, id: str) -> bool:
-        return info.context.user.is_superuser
-
-    @staticmethod
-    def has_mutation_permission(root: Any, info: ResolveInfo, input: dict) -> bool:
-        return info.context.user.is_superuser
-
-    @staticmethod
-    def has_filter_permission(info: ResolveInfo) -> bool:
+    @classmethod
+    def has_permission(cls, info: ResolveInfo) -> bool:
         return info.context.user.is_superuser
