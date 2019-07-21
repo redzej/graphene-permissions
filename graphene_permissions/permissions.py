@@ -1,9 +1,100 @@
+import operator
 from typing import Any
 
 from graphql import ResolveInfo
 
 
-class BasePermission:
+class BaseOperatorPerm:
+    def __init__(self, op1: Any, op2: Any):
+        self.op1 = op1
+        self.op2 = op2
+
+    def __call__(self):
+        return self
+
+    def has_permission(self, info: ResolveInfo):
+        return self.op_func(
+            self.op1.has_permission(info), self.op2.has_permission(info)
+        )
+
+    def has_node_permission(self, info: ResolveInfo, id: str) -> bool:
+        return self.op_func(
+            self.op1.has_node_permission(info, id),
+            self.op2.has_node_permission(info, id),
+        )
+
+    def has_mutation_permission(
+        self, root: Any, info: ResolveInfo, input: dict
+    ) -> bool:
+        return self.op_func(
+            self.op1.has_mutation_permission(root, info, input),
+            self.op2.has_mutation_permission(root, info, input),
+        )
+
+    def has_filter_permission(self, info: ResolveInfo):
+        return self.op_func(
+            self.op1.has_filter_permission(info), self.op2.has_filter_permission(info)
+        )
+
+
+class BaseSingleOperatorPerm(BaseOperatorPerm):
+    def __init__(self, op1: Any):
+        self.op1 = op1
+
+    def has_permission(self, info: ResolveInfo):
+        return self.op_func(self.op1.has_permission(info))
+
+    def has_node_permission(self, info: ResolveInfo, id: str) -> bool:
+        return self.op_func(self.op1.has_node_permission(info, id))
+
+    def has_mutation_permission(
+        self, root: Any, info: ResolveInfo, input: dict
+    ) -> bool:
+        return self.op_func(self.op1.has_mutation_permission(root, info, input))
+
+    def has_filter_permission(self, info: ResolveInfo):
+        return self.op_func(self.op1.has_filter_permission(info))
+
+
+class AND(BaseOperatorPerm):
+    op_func = operator.and_
+
+    def __repr__(self):
+        return f'({self.op1} AND {self.op2})'
+
+
+class OR(BaseOperatorPerm):
+    op_func = operator.or_
+
+    def __repr__(self):
+        return f'({self.op1} OR {self.op2})'
+
+
+class NOT(BaseSingleOperatorPerm):
+    op_func = operator.not_
+
+    def __repr__(self):
+        return f'(NOT {self.op1})'
+
+
+class BasePermissionMetaclass(type):
+    def __and__(self, other):
+        return AND(self, other)
+
+    def __or__(self, other):
+        return OR(self, other)
+
+    def __rand__(self, other):
+        return AND(other, self)
+
+    def __ror__(self, other):
+        return OR(other, self)
+
+    def __invert__(self):
+        return NOT(self)
+
+
+class BasePermission(metaclass=BasePermissionMetaclass):
     """
     Base permission class.
     Subclass it and override methods below.

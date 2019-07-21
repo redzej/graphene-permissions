@@ -372,3 +372,47 @@ def test_node_non_existent_object(client, test_kwargs, login, password):
     assert result['data'] == {
         'pet': None
     }
+
+
+@load_fixtures('tests/fixtures/test_fixture.yaml')
+@pytest.mark.parametrize(
+    'query_name, id, expected',
+    [
+        (
+            'allowOrNotAllowPet',
+            'QWxsb3dPck5vdEFsbG93UGV0Tm9kZTox',
+            {'allowOrNotAllowPet': {'name': 'Snakey'}},
+        ),
+        (
+            'allowAndNotAllowPet',
+            'QWxsb3dBbmROb3RBbGxvd1BldE5vZGU6MQ==',
+            {'allowAndNotAllowPet': None},
+        ),
+        (
+            'allowAndNotNotAllowPet',
+            'QWxsb3dBbmROb3ROb3RBbGxvd1BldE5vZGU6MQ==',
+            {'allowAndNotNotAllowPet': {'name': 'Snakey'}},
+        ),
+        (
+            'notNotAllowPet',
+            'Tm90Tm90QWxsb3dQZXROb2RlOjE=',
+            {'notNotAllowPet': {'name': 'Snakey'}},
+        ),
+    ],
+)
+@pytest.mark.django_db
+def test_permission_operator_composing(client, test_kwargs, query_name, id, expected):
+    client.login(username='tom', password='testpassword')
+    query = """
+    query{
+        %s(id: "%s"){
+            name,
+        }
+    }
+    """ % (
+        query_name,
+        id,
+    )
+    response = client.post(data=query, **test_kwargs)
+    result = response.json()
+    assert result['data'] == expected

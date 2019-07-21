@@ -13,6 +13,7 @@ from graphene_permissions.permissions import (
     AllowAuthenticated,
     AllowStaff,
     AllowSuperuser,
+    BasePermission,
 )
 from tests.test_app.models import Pet
 
@@ -65,6 +66,42 @@ class AllowAuthenticatedFilter(AuthFilter):
     permission_classes = (AllowAuthenticated,)
 
 
+class AllowOrNotAllowPetNode(AuthNode, DjangoObjectType):
+    permission_classes = (AllowAny | BasePermission,)
+
+    class Meta:
+        model = Pet
+        filter_fields = ('name',)
+        interfaces = (relay.Node,)
+
+
+class AllowAndNotAllowPetNode(AuthNode, DjangoObjectType):
+    permission_classes = (AllowAny & BasePermission,)
+
+    class Meta:
+        model = Pet
+        filter_fields = ('name',)
+        interfaces = (relay.Node,)
+
+
+class AllowAndNotNotAllowPetNode(AuthNode, DjangoObjectType):
+    permission_classes = (AllowAny & ~BasePermission,)
+
+    class Meta:
+        model = Pet
+        filter_fields = ('name',)
+        interfaces = (relay.Node,)
+
+
+class NotNotAllowPetNode(AuthNode, DjangoObjectType):
+    permission_classes = (~BasePermission,)
+
+    class Meta:
+        model = Pet
+        filter_fields = ('name',)
+        interfaces = (relay.Node,)
+
+
 class PetsQuery:
     superuser_pet = relay.Node.Field(SuperUserRequiredPetNode)
     all_superuser_pets = SuperUserRequiredFilter(SuperUserRequiredPetNode)
@@ -77,6 +114,11 @@ class PetsQuery:
 
     pet = relay.Node.Field(AllowAnyPetNode)
     all_pets = AuthFilter(AllowAnyPetNode)
+
+    allow_or_not_allow_pet = relay.Node.Field(AllowOrNotAllowPetNode)
+    allow_and_not_not_allow_pet = relay.Node.Field(AllowAndNotNotAllowPetNode)
+    allow_and_not_allow_pet = relay.Node.Field(AllowAndNotAllowPetNode)
+    not_not_allow_pet = relay.Node.Field(NotNotAllowPetNode)
 
 
 class SuperUserAddPet(AuthMutation, ClientIDMutation):
