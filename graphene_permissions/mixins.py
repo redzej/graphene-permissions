@@ -16,7 +16,7 @@ class AuthNode:
 
     @classmethod
     def get_node(cls, info: ResolveInfo, id: str) -> Optional[Model]:
-        if all((perm().has_node_permission(info, id) for perm in cls.permission_classes)):
+        if all((perm.has_node_permission(info, id) for perm in cls.permission_classes)):
             try:
                 object_instance = cls._meta.model.objects.get(id=id)  # type: ignore
             except cls._meta.model.DoesNotExist:  # type: ignore
@@ -35,7 +35,10 @@ class AuthMutation:
     @classmethod
     def has_permission(cls, root: Any, info: ResolveInfo, input: dict) -> bool:
         return all(
-            (perm().has_mutation_permission(root, info, input) for perm in cls.permission_classes)
+            (
+                perm.has_mutation_permission(root, info, input)
+                for perm in cls.permission_classes
+            )
         )
 
 
@@ -48,7 +51,7 @@ class AuthFilter(DjangoFilterConnectionField):
     @classmethod
     def has_permission(cls, info: ResolveInfo) -> bool:
         return all(
-            (perm().has_filter_permission(info) for perm in cls.permission_classes)
+            (perm.has_filter_permission(info) for perm in cls.permission_classes)
         )
 
     @classmethod
