@@ -18,7 +18,7 @@ class AuthNode:
     def get_node(cls, info: ResolveInfo, id: str) -> Optional[Model]:
         if all((perm.has_node_permission(info, id) for perm in cls.permission_classes)):
             try:
-                object_instance = cls._meta.model.objects.get(id=id)  # type: ignore
+                object_instance = cls._meta.model.objects.get(pk=id)  # type: ignore
             except cls._meta.model.DoesNotExist:  # type: ignore
                 object_instance = None
             return object_instance
