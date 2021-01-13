@@ -10,6 +10,6 @@ def client():
 @pytest.fixture
 def test_kwargs():
     return {
-        'path': '/graphql',
-        'content_type': 'application/graphql',
+        "path": "/graphql",
+        "content_type": "application/graphql",
     }

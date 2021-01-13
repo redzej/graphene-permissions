@@ -60,21 +60,21 @@ class AND(BaseOperatorPerm):
     op_func = operator.and_
 
     def __repr__(self):
-        return f'({self.op1} AND {self.op2})'
+        return f"({self.op1} AND {self.op2})"
 
 
 class OR(BaseOperatorPerm):
     op_func = operator.or_
 
     def __repr__(self):
-        return f'({self.op1} OR {self.op2})'
+        return f"({self.op1} OR {self.op2})"
 
 
 class NOT(BaseSingleOperatorPerm):
     op_func = operator.not_
 
     def __repr__(self):
-        return f'(NOT {self.op1})'
+        return f"(NOT {self.op1})"
 
 
 class BasePermissionMetaclass(type):

@@ -24,21 +24,21 @@
     first_name: Paul
     last_name: Paulin
 
-- model: test_app.pet
+- model: demo_app.pet
   pk: 1
   fields:
     name: Snakey
     race: snake
     owner: 2
 
-- model: test_app.pet
+- model: demo_app.pet
   pk: 2
   fields:
     name: Pawn
     race: cat
     owner: 3
 
-- model: test_app.pet
+- model: demo_app.pet
   pk: 3
   fields:
     name: Rex

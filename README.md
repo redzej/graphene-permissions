@@ -102,30 +102,30 @@ class AuthenticatedAddPet(AuthMutation, ClientIDMutation):
             return AuthenticatedAddPet(pet=pet)
         return AuthenticatedAddPet(pet=None)
 
-        
+
 class PetsMutation:
     authenticated_add_pet = AuthenticatedAddPet.Field()
 ```
 
 ### Customizing permission classes
 Default permission classes are: `AllowAny`, `AllowAuthenticated`, `AllowStaff`.
-You can set up equal permission for both queries and mutations with one class, simply subclass one of these classes 
-and to limit access for given object, override appropriate method. Remember to return `true` if user should be given 
+You can set up equal permission for both queries and mutations with one class, simply subclass one of these classes
+and to limit access for given object, override appropriate method. Remember to return `true` if user should be given
 access and `false`, if denied.
 
 ```python
 class AllowMutationForStaff(AllowAuthenticated):
     @staticmethod
     def has_node_permission(info, id):
-        # logic here 
+        # logic here
         # return boolean
-        
+
     @staticmethod
     def has_mutation_permission(root, info, input):
         if info.request.user.is_staff:
             return True
         return False
-       
+
     @staticmethod
     def has_filter_permission(info):
         # logic here
@@ -139,7 +139,7 @@ If one of the checks fails, access is denied.
 ```python
 class CustomPetNode(AuthNode, DjangoObjectType):
     permission_classes = (AllowAuthenticated, AllowStaff, AllowCustom)
-    
+
     class Meta:
         model = Pet
         interfaces = (relay.Node,)

@@ -15,7 +15,7 @@ from graphene_permissions.permissions import (
     AllowSuperuser,
     BasePermission,
 )
-from tests.test_app.models import Pet
+from tests.test_app.demo_app.models import Pet
 
 
 class SuperUserRequiredPetNode(AuthNode, DjangoObjectType):
@@ -23,7 +23,7 @@ class SuperUserRequiredPetNode(AuthNode, DjangoObjectType):
 
     class Meta:
         model = Pet
-        filter_fields = ('name',)
+        filter_fields = ("name",)
         interfaces = (relay.Node,)
 
 
@@ -32,7 +32,7 @@ class StaffRequiredPetNode(AuthNode, DjangoObjectType):
 
     class Meta:
         model = Pet
-        filter_fields = ('name',)
+        filter_fields = ("name",)
         interfaces = (relay.Node,)
 
 
@@ -41,7 +41,7 @@ class AllowAuthenticatedPetNode(AuthNode, DjangoObjectType):
 
     class Meta:
         model = Pet
-        filter_fields = ('name',)
+        filter_fields = ("name",)
         interfaces = (relay.Node,)
 
 
@@ -50,7 +50,7 @@ class AllowAnyPetNode(AuthNode, DjangoObjectType):
 
     class Meta:
         model = Pet
-        filter_fields = ('name',)
+        filter_fields = ("name",)
         interfaces = (relay.Node,)
 
 
@@ -71,7 +71,7 @@ class AllowOrNotAllowPetNode(AuthNode, DjangoObjectType):
 
     class Meta:
         model = Pet
-        filter_fields = ('name',)
+        filter_fields = ("name",)
         interfaces = (relay.Node,)
 
 
@@ -80,7 +80,7 @@ class AllowAndNotAllowPetNode(AuthNode, DjangoObjectType):
 
     class Meta:
         model = Pet
-        filter_fields = ('name',)
+        filter_fields = ("name",)
         interfaces = (relay.Node,)
 
 
@@ -89,7 +89,7 @@ class AllowAndNotNotAllowPetNode(AuthNode, DjangoObjectType):
 
     class Meta:
         model = Pet
-        filter_fields = ('name',)
+        filter_fields = ("name",)
         interfaces = (relay.Node,)
 
 
@@ -98,7 +98,7 @@ class NotNotAllowPetNode(AuthNode, DjangoObjectType):
 
     class Meta:
         model = Pet
-        filter_fields = ('name',)
+        filter_fields = ("name",)
         interfaces = (relay.Node,)
 
 
@@ -135,8 +135,10 @@ class SuperUserAddPet(AuthMutation, ClientIDMutation):
     @classmethod
     def mutate_and_get_payload(cls, root, info, **input):
         if cls.has_permission(root, info, input):
-            owner = User.objects.get(pk=from_global_id(input['owner'])[1])
-            pet = Pet.objects.create(name=input['name'], race=input['race'], owner=owner)
+            owner = User.objects.get(pk=from_global_id(input["owner"])[1])
+            pet = Pet.objects.create(
+                name=input["name"], race=input["race"], owner=owner
+            )
             return SuperUserAddPet(pet=pet, status=HTTPStatus.CREATED)
         return SuperUserAddPet(pet=None, status=HTTPStatus.BAD_REQUEST)
 
@@ -155,8 +157,10 @@ class StaffAddPet(AuthMutation, ClientIDMutation):
     @classmethod
     def mutate_and_get_payload(cls, root, info, **input):
         if cls.has_permission(root, info, input):
-            owner = User.objects.get(pk=from_global_id(input['owner'])[1])
-            pet = Pet.objects.create(name=input['name'], race=input['race'], owner=owner)
+            owner = User.objects.get(pk=from_global_id(input["owner"])[1])
+            pet = Pet.objects.create(
+                name=input["name"], race=input["race"], owner=owner
+            )
             return StaffAddPet(pet=pet, status=HTTPStatus.CREATED)
         return StaffAddPet(pet=None, status=HTTPStatus.BAD_REQUEST)
 
@@ -175,8 +179,10 @@ class AuthenticatedAddPet(AuthMutation, ClientIDMutation):
     @classmethod
     def mutate_and_get_payload(cls, root, info, **input):
         if cls.has_permission(root, info, input):
-            owner = User.objects.get(pk=from_global_id(input['owner'])[1])
-            pet = Pet.objects.create(name=input['name'], race=input['race'], owner=owner)
+            owner = User.objects.get(pk=from_global_id(input["owner"])[1])
+            pet = Pet.objects.create(
+                name=input["name"], race=input["race"], owner=owner
+            )
             return AuthenticatedAddPet(pet=pet, status=HTTPStatus.CREATED)
         return AuthenticatedAddPet(pet=None, status=HTTPStatus.BAD_REQUEST)
 
@@ -195,8 +201,10 @@ class AddPet(AuthMutation, ClientIDMutation):
     @classmethod
     def mutate_and_get_payload(cls, root, info, **input):
         if cls.has_permission(root, info, input):
-            owner = User.objects.get(pk=from_global_id(input['owner'])[1])
-            pet = Pet.objects.create(name=input['name'], race=input['race'], owner=owner)
+            owner = User.objects.get(pk=from_global_id(input["owner"])[1])
+            pet = Pet.objects.create(
+                name=input["name"], race=input["race"], owner=owner
+            )
             return AddPet(pet=pet, status=HTTPStatus.CREATED)
         return AddPet(pet=None, status=HTTPStatus.BAD_REQUEST)
 
