@@ -1,10 +1,12 @@
+from functools import partial
 from typing import Any, Optional
 
 from django.db.models import Model
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql import ResolveInfo
-
+from graphene_django import __version__
 from graphene_permissions.permissions import AllowAny
+from packaging import version
 
 
 class AuthNode:
@@ -12,6 +14,7 @@ class AuthNode:
     Permission mixin for queries (nodes).
     Allows for simple configuration of access to nodes via class system.
     """
+
     permission_classes = (AllowAny,)
 
     @classmethod
@@ -30,6 +33,7 @@ class AuthMutation:
     """
     Permission mixin for ClientIdMutation.
     """
+
     permission_classes = (AllowAny,)
 
     @classmethod
@@ -42,10 +46,11 @@ class AuthMutation:
         )
 
 
-class AuthFilter(DjangoFilterConnectionField):
+class AuthFilterPre270(DjangoFilterConnectionField):
     """
     Custom ConnectionField for permission system.
     """
+
     permission_classes = (AllowAny,)
 
     @classmethod
@@ -56,24 +61,92 @@ class AuthFilter(DjangoFilterConnectionField):
 
     @classmethod
     def connection_resolver(
-            cls, resolver, connection, default_manager,
-            max_limit, enforce_first_or_last, filterset_class,
-            filtering_args, root, info, **args
+        cls,
+        resolver,
+        connection,
+        default_manager,
+        max_limit,
+        enforce_first_or_last,
+        filterset_class,
+        filtering_args,
+        root,
+        info,
+        **args
     ):
 
         filter_kwargs = {k: v for k, v in args.items() if k in filtering_args}
         qs = filterset_class(
-            data=filter_kwargs,
-            queryset=default_manager.get_queryset()
+            data=filter_kwargs, queryset=default_manager.get_queryset()
         ).qs
 
         if not cls.has_permission(info):
             return super(DjangoFilterConnectionField, cls).connection_resolver(
-                resolver, connection, qs.none(), max_limit, enforce_first_or_last,
-                root, info, **args,
+                resolver,
+                connection,
+                qs.none(),
+                max_limit,
+                enforce_first_or_last,
+                root,
+                info,
+                **args,
             )
 
         return super(DjangoFilterConnectionField, cls).connection_resolver(
-            resolver, connection, qs, max_limit, enforce_first_or_last,
-            filterset_class, filtering_args, **args,
+            resolver,
+            connection,
+            qs,
+            max_limit,
+            enforce_first_or_last,
+            filterset_class,
+            filtering_args,
+            **args,
         )
+
+
+class AuthFilterPost270(DjangoFilterConnectionField):
+    """
+    Custom ConnectionField for permission system.
+    """
+
+    permission_classes = (AllowAny,)
+
+    @classmethod
+    def has_permission(cls, info: ResolveInfo) -> bool:
+        return all(
+            (perm.has_filter_permission(info) for perm in cls.permission_classes)
+        )
+
+    @classmethod
+    def connection_resolver(
+        cls,
+        resolver,
+        connection,
+        default_manager,
+        queryset_resolver,
+        max_limit,
+        enforce_first_or_last,
+        root,
+        info,
+        **args
+    ):
+        if not cls.has_permission(info):
+            on_resolve = partial(cls.resolve_connection, connection, args)
+            return on_resolve([])
+
+        return super(DjangoFilterConnectionField, cls).connection_resolver(
+            resolver,
+            connection,
+            default_manager,
+            queryset_resolver,
+            max_limit,
+            enforce_first_or_last,
+            root,
+            info,
+            **args,
+        )
+
+
+if version.parse(__version__) < version.parse("2.7.0"):
+    AuthFilter = AuthFilterPre270
+else:
+    AuthFilter = AuthFilterPost270
