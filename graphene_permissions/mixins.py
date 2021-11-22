@@ -3,7 +3,7 @@ from typing import Any, Optional
 
 from django.db.models import Model
 from graphene_django.filter import DjangoFilterConnectionField
-from graphql import ResolveInfo
+from graphene import ResolveInfo
 from graphene_django import __version__
 from graphene_permissions.permissions import AllowAny
 from packaging import version
