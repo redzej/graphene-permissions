@@ -9,10 +9,8 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    # 'django.contrib.staticfiles',
     "graphene_django",
-    "django_filters",
-    "tests.test_app.demo_app",
+    "tests.test_app.demo_app"
 ]
 
 MIDDLEWARE = [
@@ -51,7 +49,5 @@ TEMPLATES = [
 ]
 
 ROOT_URLCONF = "tests.test_app.urls"
-
-# STATIC_URL = ''
 
 GRAPHENE = {"SCHEMA": "tests.test_app.demo_app.schema.schema"}

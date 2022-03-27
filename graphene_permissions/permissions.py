@@ -1,7 +1,7 @@
 import operator
 from typing import Any
 
-from graphql import ResolveInfo
+from graphene import ResolveInfo
 
 
 class BaseOperatorPerm:
