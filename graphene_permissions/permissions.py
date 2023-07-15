@@ -1,7 +1,7 @@
 import operator
 from typing import Any
 
-from graphene import ResolveInfo
+from graphql.type import GraphQLResolveInfo
 
 
 class BaseOperatorPerm:
@@ -12,26 +12,26 @@ class BaseOperatorPerm:
     def __call__(self):
         return self
 
-    def has_permission(self, info: ResolveInfo):
+    def has_permission(self, info: GraphQLResolveInfo):
         return self.op_func(
             self.op1.has_permission(info), self.op2.has_permission(info)
         )
 
-    def has_node_permission(self, info: ResolveInfo, id: str) -> bool:
+    def has_node_permission(self, info: GraphQLResolveInfo, id: str) -> bool:
         return self.op_func(
             self.op1.has_node_permission(info, id),
             self.op2.has_node_permission(info, id),
         )
 
     def has_mutation_permission(
-        self, root: Any, info: ResolveInfo, input: dict
+        self, root: Any, info: GraphQLResolveInfo, input: dict
     ) -> bool:
         return self.op_func(
             self.op1.has_mutation_permission(root, info, input),
             self.op2.has_mutation_permission(root, info, input),
         )
 
-    def has_filter_permission(self, info: ResolveInfo):
+    def has_filter_permission(self, info: GraphQLResolveInfo):
         return self.op_func(
             self.op1.has_filter_permission(info), self.op2.has_filter_permission(info)
         )
@@ -41,18 +41,18 @@ class BaseSingleOperatorPerm(BaseOperatorPerm):
     def __init__(self, op1: Any):
         self.op1 = op1
 
-    def has_permission(self, info: ResolveInfo):
+    def has_permission(self, info: GraphQLResolveInfo):
         return self.op_func(self.op1.has_permission(info))
 
-    def has_node_permission(self, info: ResolveInfo, id: str) -> bool:
+    def has_node_permission(self, info: GraphQLResolveInfo, id: str) -> bool:
         return self.op_func(self.op1.has_node_permission(info, id))
 
     def has_mutation_permission(
-        self, root: Any, info: ResolveInfo, input: dict
+        self, root: Any, info: GraphQLResolveInfo, input: dict
     ) -> bool:
         return self.op_func(self.op1.has_mutation_permission(root, info, input))
 
-    def has_filter_permission(self, info: ResolveInfo):
+    def has_filter_permission(self, info: GraphQLResolveInfo):
         return self.op_func(self.op1.has_filter_permission(info))
 
 
@@ -101,22 +101,22 @@ class BasePermission(metaclass=BasePermissionMetaclass):
     """
 
     @classmethod
-    def has_permission(cls, info: ResolveInfo) -> bool:
+    def has_permission(cls, info: GraphQLResolveInfo) -> bool:
         """Fallback for other has_..._permission functions.
         Returns False by default, overwrite for custom behaviour.
         """
         return False
 
     @classmethod
-    def has_node_permission(cls, info: ResolveInfo, id: str) -> bool:
+    def has_node_permission(cls, info: GraphQLResolveInfo, id: str) -> bool:
         return cls.has_permission(info)
 
     @classmethod
-    def has_mutation_permission(cls, root: Any, info: ResolveInfo, input: dict) -> bool:
+    def has_mutation_permission(cls, root: Any, info: GraphQLResolveInfo, input: dict) -> bool:
         return cls.has_permission(info)
 
     @classmethod
-    def has_filter_permission(cls, info: ResolveInfo) -> bool:
+    def has_filter_permission(cls, info: GraphQLResolveInfo) -> bool:
         return cls.has_permission(info)
 
 
@@ -127,7 +127,7 @@ class AllowAny(BasePermission):
     """
 
     @classmethod
-    def has_permission(cls, info: ResolveInfo) -> bool:
+    def has_permission(cls, info: GraphQLResolveInfo) -> bool:
         return True
 
 
@@ -137,7 +137,7 @@ class AllowAuthenticated(BasePermission):
     """
 
     @classmethod
-    def has_permission(cls, info: ResolveInfo) -> bool:
+    def has_permission(cls, info: GraphQLResolveInfo) -> bool:
         return info.context.user.is_authenticated
 
 
@@ -147,7 +147,7 @@ class AllowStaff(BasePermission):
     """
 
     @classmethod
-    def has_permission(cls, info: ResolveInfo) -> bool:
+    def has_permission(cls, info: GraphQLResolveInfo) -> bool:
         return info.context.user.is_staff
 
 
@@ -157,5 +157,5 @@ class AllowSuperuser(BasePermission):
     """
 
     @classmethod
-    def has_permission(cls, info: ResolveInfo) -> bool:
+    def has_permission(cls, info: GraphQLResolveInfo) -> bool:
         return info.context.user.is_superuser
