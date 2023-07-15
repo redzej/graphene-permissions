@@ -3,7 +3,7 @@ from typing import Any, Optional
 
 from django.db.models import Model
 from graphene_django.filter import DjangoFilterConnectionField
-from graphene import ResolveInfo
+from graphql.type import GraphQLResolveInfo
 from graphene_django import __version__
 from graphene_permissions.permissions import AllowAny
 from packaging import version
@@ -18,7 +18,7 @@ class AuthNode:
     permission_classes = (AllowAny,)
 
     @classmethod
-    def get_node(cls, info: ResolveInfo, id: str) -> Optional[Model]:
+    def get_node(cls, info: GraphQLResolveInfo, id: str) -> Optional[Model]:
         if all((perm.has_node_permission(info, id) for perm in cls.permission_classes)):
             try:
                 object_instance = cls._meta.model.objects.get(pk=id)  # type: ignore
@@ -37,7 +37,7 @@ class AuthMutation:
     permission_classes = (AllowAny,)
 
     @classmethod
-    def has_permission(cls, root: Any, info: ResolveInfo, input: dict) -> bool:
+    def has_permission(cls, root: Any, info: GraphQLResolveInfo, input: dict) -> bool:
         return all(
             (
                 perm.has_mutation_permission(root, info, input)
@@ -54,7 +54,7 @@ class AuthFilterPre270(DjangoFilterConnectionField):
     permission_classes = (AllowAny,)
 
     @classmethod
-    def has_permission(cls, info: ResolveInfo) -> bool:
+    def has_permission(cls, info: GraphQLResolveInfo) -> bool:
         return all(
             (perm.has_filter_permission(info) for perm in cls.permission_classes)
         )
@@ -105,7 +105,7 @@ class AuthFilterPost270(DjangoFilterConnectionField):
     permission_classes = (AllowAny,)
 
     @classmethod
-    def has_permission(cls, info: ResolveInfo) -> bool:
+    def has_permission(cls, info: GraphQLResolveInfo) -> bool:
         return all(
             (perm.has_filter_permission(info) for perm in cls.permission_classes)
         )
